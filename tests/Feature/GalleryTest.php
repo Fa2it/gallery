@@ -7,6 +7,7 @@ use App\Gallery;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GalleryTest extends TestCase
@@ -263,8 +264,6 @@ class GalleryTest extends TestCase
     public function testGalleryPhotoHasUser()
     {
         $this->withoutExceptionHandling(); 
-
-        $this->withoutExceptionHandling(); 
         $user = factory(User::class)->create();
         $photo = factory(Gallery::class)->create([
                     'user_id'=> $user->id,
@@ -273,6 +272,29 @@ class GalleryTest extends TestCase
         $this->assertEquals( 1, $photo->user->id ) ;
 
     }
+    /**
+     * Test inverse Relations for User and Gallery
+     * 
+     * @return void
+     */
+    public function testRegisterUserHasApiToken()
+    {
+        $this->withoutExceptionHandling(); 
 
+        $user =  new User();
+
+        $user->id = 5;
+        $user->name = "Felix Ashu";
+        $user->email = "ashu_felix@yahoo.co.uk";
+        $user->email_verified_at = now();
+        $user->password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'; // password
+        $user->remember_token = Str::random(10);
+        $user->api_token = null;
+
+        $user->save();
+
+        $this->assertNotNull( $user->api_token ) ;
+
+    }
 
 }
